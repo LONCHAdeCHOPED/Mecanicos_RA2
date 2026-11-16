@@ -110,6 +110,122 @@ object MecanicosDAO {
             }
         } ?: println("No se pudo establecer la conexión.")
     }
+
+    fun añadirMecanico(){
+
+        println("Nombre del mecanico: ")
+        val nombre = readLine()!!
+
+        println("Especialidad: ")
+        val especialidad = readLine()!!
+
+        var experienciaValida = false
+        var experiencia = 0
+        do {
+            println("Dime la experiencia del Mecanico")
+            val banderaExp = readln().toIntOrNull()
+            if (banderaExp == null) {
+                println("Error, experiencia del Mecanico no valida")
+            } else {
+                println("Experiencia del Mecanico valida")
+                experiencia = banderaExp
+                experienciaValida = true
+            }
+        } while (!experienciaValida)
+
+        var tarifaValida = false
+        var tarifa = 0.0
+        do {
+            println("Dime la tarifa del Mecanico")
+            val tarifaHoraBandera = readln().toDoubleOrNull()
+            if (tarifaHoraBandera == null) {
+                println("Error, tarifa del Mecanico no valida")
+            } else {
+                println("Tarifa del Mecanico valida")
+                tarifa = tarifaHoraBandera
+                tarifaValida = true
+            }
+        } while (!tarifaValida)
+
+        val mecanico = Mecanico(null, nombre, especialidad, experiencia, tarifa)
+        insertarMecanico(mecanico)
+    }
+
+    fun modificarMecanico(){
+        var idMecanico = 0
+        var idValido = false
+
+        do {
+            println("Introduce el ID del mecánico a modificar")
+            val bandera = readln().toInt()
+            if (bandera == null) {
+                println("Error, ID no valida")
+            } else {
+                idMecanico = bandera
+                idValido = true
+            }
+        } while (!idValido)
+
+        conectarBD()?.use { conn ->
+            conn.prepareStatement("SELECT nombre_mecanico FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
+                stmt.setInt(1, idMecanico)
+                stmt.executeQuery().use {rs ->
+                    if (!rs.next()) {
+                        println("No se encontró al mecanico")
+                    }
+                    println("Mecanico: ${rs.getString("nombre_mecanico")}")
+                }
+            }
+        }
+
+        println("Nuevo nombre del mecanico")
+        val nombre = readLine()!!
+        println("Especialidad del Mecanico: ")
+        val especialidad = readLine()!!
+        println("Experiencia del mecanico [años]")
+        var experiencia = readln().toIntOrNull()
+        while (experiencia == null) {
+            println("Error, experiencia del Mecanico no valida")
+            experiencia = readLine()!!.toIntOrNull()
+        }
+        println("Tarfia del mecanico: ")
+        var tarifa = readln().toDoubleOrNull()
+        while (tarifa == null) {
+            println("Error, tarifa del Mecanico no valida")
+            tarifa = readLine()!!.toDoubleOrNull()
+        }
+        val mecanicoModificado = Mecanico(idMecanico, nombre, especialidad, experiencia, tarifa)
+        actualizarMecanico(mecanicoModificado)
+        println("Mecanico actualizado")
+    }
+
+    fun eliminarMecanico(){
+        var idMecanico = 0
+        var idValido = false
+
+        do {
+            println("Introduce el ID del mecánico a eliminar")
+            val bandera = readln().toInt()
+            if (bandera == null) {
+                println("Error, ID no valida")
+            } else {
+                idMecanico = bandera
+                idValido = true
+            }
+        } while (!idValido)
+
+        conectarBD()?.use { conn ->
+            conn.prepareStatement("DELETE FROM mecanicos WHERE id_mecanico = ?").use { pstmt ->
+                pstmt.setInt(1, idMecanico)
+                val filas = pstmt.executeUpdate()
+                if (filas > 0) {
+                    println("Mecanico con id = $idMecanico eliminado correctamente")
+                } else{
+                    println("No se encontró al mecanico")
+                }
+            }
+        }
+    }
 }
 
 

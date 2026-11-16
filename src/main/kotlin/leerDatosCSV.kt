@@ -14,7 +14,7 @@ fun leerDatosCSV(ruta: Path): List<Mecanico> {
             delimiter = ';'
         }
 
-        val filas: List<List<String>> = reader.readAll(ruta.toFile())
+        val filas: List<List<String>> = reader.readAll(ruta.toFile()).drop(1)
 
         mecanicos = filas.mapNotNull { columnas ->
             if (columnas.size >= 5){
