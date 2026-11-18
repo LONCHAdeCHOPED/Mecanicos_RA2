@@ -1,0 +1,6 @@
+id_reparacion;matricula;descripcion;fecha_entrada;estado;coste_total
+1;1234ABC;Cambio de aceite y filtros;2026-11-10;FINALIZADA;120.5
+2;5678DEF;Sustitución de pastillas de freno;2026-11-12;EN PROCESO;85.0
+3;9012GHI;Revisión general y diagnosis;2026-11-14;PENDIENTE;0.0
+4;3456JKL;Cambio de embrague completo;2026-11-15;EN PROCESO;450.0
+5;7890MNO;Reparación aire acondicionado;2026-11-17;PENDIENTE;0.0

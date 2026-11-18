@@ -1,5 +1,10 @@
 import java.nio.file.Path
 
+/*
+@author Antonio De la torre
+Entidades: Mecanicos, Reparaciones y Reparar
+ */
+
 fun importarCSVaBD(ruta: Path) {
     val listaMecanicos = leerDatosCSV(ruta)
 
@@ -9,6 +14,13 @@ fun importarCSVaBD(ruta: Path) {
     }
 
     conectarBD()?.use { conn ->
+        // Vaciamos la tabla intermedia y la principal antes de importar (MySQL)
+        conn.createStatement().use { stmt ->
+            stmt.executeUpdate("DELETE FROM reparar")
+            stmt.executeUpdate("DELETE FROM mecanicos")
+            stmt.executeUpdate("ALTER TABLE mecanicos AUTO_INCREMENT = 1")
+        }
+
         val sqlInsert = "INSERT INTO mecanicos (nombre_mecanico, especialidad, experiencia, tarifa_hora) VALUES (?, ?, ?, ?)"
 
         conn.prepareStatement(sqlInsert).use { pstmt ->

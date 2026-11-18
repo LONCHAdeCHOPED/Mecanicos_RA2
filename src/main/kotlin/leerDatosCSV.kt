@@ -2,6 +2,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 
+/*
+@author Antonio De la torre
+Entidades: Mecanicos, Reparaciones y Reparar
+ */
 
 fun leerDatosCSV(ruta: Path): List<Mecanico> {
     var mecanicos: List<Mecanico> = emptyList()

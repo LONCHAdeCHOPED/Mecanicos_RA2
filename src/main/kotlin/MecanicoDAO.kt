@@ -6,6 +6,11 @@ data class Mecanico(
     val tarifahora: Double
 )
 
+/*
+@author Antonio De la torre
+Entidades: Mecanicos, Reparaciones y Reparar
+ */
+
 object MecanicosDAO {
     fun listarMecanicos(): List<Mecanico> {
         val lista = mutableListOf<Mecanico>()
@@ -92,20 +97,6 @@ object MecanicosDAO {
                     println("Mecanico con id=${mecanico.id_mecanico} actualizado con éxito.")
                 } else {
                     println("No se encontró ningun mecanico con id=${mecanico.id_mecanico}.")
-                }
-            }
-        } ?: println("No se pudo establecer la conexión.")
-    }
-
-    fun eliminarMecanico(id: Int) {
-        conectarBD()?.use { conn ->
-            conn.prepareStatement("DELETE FROM mecanicos WHERE id_mecanico = ?").use { pstmt ->
-                pstmt.setInt(1, id)
-                val filas = pstmt.executeUpdate()
-                if (filas > 0) {
-                    println("Mecanico con id=$id eliminado correctamente.")
-                } else {
-                    println("No se encontró ningun mecanico con id=$id.")
                 }
             }
         } ?: println("No se pudo establecer la conexión.")
@@ -199,30 +190,52 @@ object MecanicosDAO {
         println("Mecanico actualizado")
     }
 
-    fun eliminarMecanico(){
-        var idMecanico = 0
-        var idValido = false
-
+    fun eliminarMecanico() {
+        var idMecanico: Int?
         do {
-            println("Introduce el ID del mecánico a eliminar")
-            val bandera = readln().toInt()
-            if (bandera == null) {
-                println("Error, ID no valida")
-            } else {
-                idMecanico = bandera
-                idValido = true
-            }
-        } while (!idValido)
+            println("Introduce el ID del mecánico a eliminar:")
+            idMecanico = readln().toIntOrNull()
+        } while (idMecanico == null)
 
         conectarBD()?.use { conn ->
-            conn.prepareStatement("DELETE FROM mecanicos WHERE id_mecanico = ?").use { pstmt ->
-                pstmt.setInt(1, idMecanico)
-                val filas = pstmt.executeUpdate()
-                if (filas > 0) {
-                    println("Mecanico con id = $idMecanico eliminado correctamente")
-                } else{
-                    println("No se encontró al mecanico")
+            // 1. Comprobar que el mecánico existe
+            conn.prepareStatement("SELECT nombre_mecanico FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
+                stmt.setInt(1, idMecanico)
+                stmt.executeQuery().use { rs ->
+                    if (!rs.next()) {
+                        println("No se encontró el mecánico.")
+                        return
+                    }
+                    println("Mecánico encontrado: ${rs.getString("nombre_mecanico")}")
                 }
+            }
+
+            // 2. Comprobar si tiene relaciones en 'reparar'
+            val tieneRelaciones = conn.prepareStatement("SELECT 1 FROM reparar WHERE id_mecanico = ?").use { stmt ->
+                stmt.setInt(1, idMecanico)
+                stmt.executeQuery().use { it.next() }
+            }
+
+            if (tieneRelaciones) {
+                println("AVISO: Este mecánico tiene registros en la tabla 'reparar' que también se borrarán.")
+            }
+
+            // 3. Confirmar y borrar
+            println("¿Confirmas el borrado? (S/N):")
+            if (readln().trim().uppercase() == "S") {
+                if (tieneRelaciones) {
+                    conn.prepareStatement("DELETE FROM reparar WHERE id_mecanico = ?").use {
+                        it.setInt(1, idMecanico)
+                        it.executeUpdate()
+                    }
+                }
+                conn.prepareStatement("DELETE FROM mecanicos WHERE id_mecanico = ?").use {
+                    it.setInt(1, idMecanico)
+                    it.executeUpdate()
+                }
+                println("Mecánico eliminado correctamente.")
+            } else {
+                println("Operación cancelada.")
             }
         }
     }
