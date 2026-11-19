@@ -126,26 +126,28 @@ object MecanicosDAO {
 
         do {
             println("Introduce el ID del mecánico a modificar")
-            val bandera = readln().toInt()
+            val bandera = readln().toIntOrNull()
             if (bandera == null) {
                 println("Error, ID no valida")
             } else {
-                idMecanico = bandera
-                idValido = true
+                conectarBD()?.use { conn ->
+                    conn.prepareStatement("SELECT nombre_mecanico FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
+                        stmt.setInt(1, bandera)
+                        stmt.executeQuery().use { rs ->
+                            if (!rs.next()) {
+                                println("No se encontró al mecanico")
+                            } else {
+                                println("Mecanico: ${rs.getString("nombre_mecanico")}")
+                                idMecanico = bandera
+                                idValido = true
+                            }
+                        }
+                    }
+                } ?: return
             }
         } while (!idValido)
 
-        conectarBD()?.use { conn ->
-            conn.prepareStatement("SELECT nombre_mecanico FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
-                stmt.setInt(1, idMecanico)
-                stmt.executeQuery().use {rs ->
-                    if (!rs.next()) {
-                        println("No se encontró al mecanico")
-                    }
-                    println("Mecanico: ${rs.getString("nombre_mecanico")}")
-                }
-            }
-        }
+
 
         println("Nuevo nombre del mecanico")
         val nombre = readLine()!!
