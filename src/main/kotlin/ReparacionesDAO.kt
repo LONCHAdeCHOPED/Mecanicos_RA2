@@ -16,9 +16,7 @@ data class Reparacion(
 
 object ReparacionesDAO {
 
-    // ==========================================
-    // 1. MÉTODOS DE ACCESO A BASE DE DATOS (CRUD)
-    // ==========================================
+    // Metodos de la tabla reparaciones (CRUD)
 
     fun listarReparaciones(): List<Reparacion> {
         val lista = mutableListOf<Reparacion>()
@@ -52,28 +50,6 @@ object ReparacionesDAO {
             )
         }
         return lista
-    }
-
-    fun consultarReparacionPorId(id: Int): Reparacion? {
-        var reparacion: Reparacion? = null
-        conectarBD()?.use { conn ->
-            conn.prepareStatement("SELECT * FROM reparaciones WHERE id_reparacion = ?").use { pstmt ->
-                pstmt.setInt(1, id)
-                pstmt.executeQuery().use { rs ->
-                    if (rs.next()) {
-                        reparacion = Reparacion(
-                            id_reparacion = rs.getInt("id_reparacion"),
-                            matricula = rs.getString("matricula"),
-                            descripcion = rs.getString("descripcion"),
-                            fecha_entrada = rs.getString("fecha_entrada"),
-                            estado = rs.getString("estado"),
-                            coste_total = rs.getDouble("coste_total")
-                        )
-                    }
-                }
-            }
-        } ?: println("No se pudo establecer la conexión.")
-        return reparacion
     }
 
     fun insertarReparacion(reparacion: Reparacion) {
@@ -116,11 +92,6 @@ object ReparacionesDAO {
             }
         } ?: println("No se pudo establecer la conexión.")
     }
-
-
-    // ==========================================
-    // 2. MÉTODOS INTERACTIVOS DE CONSOLA (MENÚ)
-    // ==========================================
 
     fun añadirReparacion() {
         println("Matrícula del vehículo: ")

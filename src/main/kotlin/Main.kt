@@ -38,7 +38,7 @@ fun menuPrincipal(){
         println("--------------------------------")
         println("1. CRUD Mecanicos")
         println("2. CRUD Reparaciones")
-        println("3. Transaccion")
+        println("3. Asignar Mecanico a una Reparacion (Transaccion)")
         println("0. Salir")
         numero = readLine()!!.toInt()
         when (numero) {
@@ -81,24 +81,27 @@ fun menuMecanicos(){
 
 fun menuReparar(){
     var numero : Int
+    val ruta = Path.of("datos", "reparaciones.csv")
 
     do {
         println("--------------------------------")
-        println("-------- CRUD REPARAR --------")
+        println("--------- CRUD REPARAR ---------")
         println("--------------------------------")
-        println("1. Leer informacion")
-        println("2. Añadir un registro nuevo")
-        println("3. Modificar un registro existente (por ID)")
-        println("4. Eliminar un registro existente (por ID)")
-        println("5. Consultar el estado de una reparacion (Procedimiento)")
+        println("1. Importar datos desde fichero CSV")
+        println("2. Leer informacion")
+        println("3. Añadir un registro nuevo")
+        println("4. Modificar un registro existente (por ID)")
+        println("5. Eliminar un registro existente (por ID)")
+        println("6. Cambier estado de una reparacion (Procedimiento)")
         println("0. Volver al menú principal... ")
         numero = readLine()!!.toInt()
         when (numero) {
-            1 -> ReparacionesDAO.listarReparaciones()
-            2 -> ReparacionesDAO.añadirReparacion()
-            3 -> ReparacionesDAO.modificarReparacion()
-            4 -> ReparacionesDAO.eliminarReparacion()
-            5 -> ProcedimientosDAO.consultarReparacionesPorMecanico()
+            1 -> importarReparacionesCSVaBD(ruta)
+            2 -> ReparacionesDAO.listarReparaciones()
+            3 -> ReparacionesDAO.añadirReparacion()
+            4 -> ReparacionesDAO.modificarReparacion()
+            5 -> ReparacionesDAO.eliminarReparacion()
+            6 -> ProcedimientosDAO.cambiarEstadoReparacion()
             0 -> println("Volviendo al menu principal..." + menuPrincipal())
         }
     } while (numero != 0)

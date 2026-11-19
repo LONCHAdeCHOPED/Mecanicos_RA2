@@ -32,9 +32,7 @@ object Transaccion {
         conectarBD()?.use { conn ->
             try {
                 conn.autoCommit = false
-
-                // 1. Verificar mecánico y obtener tarifa
-                val tarifa = conn.prepareStatement("SELECT tarifa_hora FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
+                val tarifa = conn.prepareStatement("SELECT tarifa FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
                     stmt.setInt(1, idMecanico)
                     stmt.executeQuery().use { rs ->
                         if (!rs.next()) {
@@ -42,11 +40,9 @@ object Transaccion {
                             conn.rollback()
                             return
                         }
-                        rs.getDouble("tarifa_hora")
+                        rs.getDouble("tarifa")
                     }
                 }
-
-                // 2. Verificar reparación
                 conn.prepareStatement("SELECT id_reparacion FROM reparaciones WHERE id_reparacion = ?").use { stmt ->
                     stmt.setInt(1, idReparacion)
                     stmt.executeQuery().use { rs ->
@@ -59,8 +55,6 @@ object Transaccion {
                 }
 
                 val importe = tarifa * horas
-
-                // 3. Actualizar coste_total e insertar en tabla intermedia 'reparar'
                 conn.prepareStatement("UPDATE reparaciones SET coste_total = coste_total + ? WHERE id_reparacion = ?").use { stmt ->
                     stmt.setDouble(1, importe)
                     stmt.setInt(2, idReparacion)
@@ -74,9 +68,8 @@ object Transaccion {
                     stmt.setDouble(4, importe)
                     stmt.executeUpdate()
                 }
-
                 conn.commit()
-                println("Asignación realizada con éxito (+${importe}€).")
+                println("Asignación realizada con éxito (+${String.format("%.2f", importe)}€).")
 
             } catch (e: SQLException) {
                 conn.rollback()

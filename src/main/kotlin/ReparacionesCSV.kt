@@ -17,7 +17,6 @@ fun leerReparacionesCSV(ruta: Path): List<Reparacion> {
         val reader = csvReader() {
             delimiter = ';'
         }
-
         val filas: List<List<String>> = reader.readAll(ruta.toFile()).drop(1)
 
         reparaciones = filas.mapNotNull { columnas ->
@@ -61,7 +60,6 @@ fun importarReparacionesCSVaBD(ruta: Path) {
     }
 
     conectarBD()?.use { conn ->
-        // Vaciamos la tabla intermedia y la principal antes de importar (MySQL)
         conn.createStatement().use { stmt ->
             stmt.executeUpdate("DELETE FROM reparar")
             stmt.executeUpdate("DELETE FROM reparaciones")

@@ -14,7 +14,6 @@ fun importarCSVaBD(ruta: Path) {
     }
 
     conectarBD()?.use { conn ->
-        // Vaciamos la tabla intermedia y la principal antes de importar (MySQL)
         conn.createStatement().use { stmt ->
             stmt.executeUpdate("DELETE FROM reparar")
             stmt.executeUpdate("DELETE FROM mecanicos")

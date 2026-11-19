@@ -24,7 +24,7 @@ object MecanicosDAO {
                                 nombre = rs.getString("nombre_mecanico"),
                                 especialidad = rs.getString("especialidad"),
                                 experiencia = rs.getInt("experiencia"),
-                                tarifahora = rs.getDouble("tarifa_hora")
+                                tarifahora = rs.getDouble("tarifa")
                             )
                         )
                     }
@@ -41,32 +41,10 @@ object MecanicosDAO {
         return lista
     }
 
-    fun consultarMecanicoPorId(id: Int): Mecanico? {
-        var mecanico: Mecanico? = null
-        conectarBD()?.use { conn ->
-            conn.prepareStatement("SELECT * FROM mecanicos WHERE id_mecanico = ?").use { pstmt ->
-                pstmt.setInt(1, id)
-                pstmt.executeQuery().use { rs ->
-                    if (rs.next()) {
-                        mecanico = Mecanico(
-                            id_mecanico = rs.getInt("id_mecanico"),
-                            nombre = rs.getString("nombre_mecanico"),
-                            especialidad = rs.getString("especialidad"),
-                            experiencia = rs.getInt("experiencia"),
-                            tarifahora = rs.getDouble("tarifa_hora")
-                        )
-                    }
-                }
-            }
-        } ?: println("No se pudo establecer la conexión.")
-        return mecanico
-    }
-
-
     fun insertarMecanico(mecanico: Mecanico) {
         conectarBD()?.use { conn ->
             conn.prepareStatement(
-                "INSERT INTO mecanicos(nombre_mecanico, especialidad, experiencia, tarifa_hora) VALUES (?, ?, ?, ?)"
+                "INSERT INTO mecanicos(nombre_mecanico, especialidad, experiencia, tarifa) VALUES (?, ?, ?, ?)"
             ).use { pstmt ->
                 pstmt.setString(1, mecanico.nombre)
                 pstmt.setString(2, mecanico.especialidad)
@@ -85,7 +63,7 @@ object MecanicosDAO {
         }
         conectarBD()?.use { conn ->
             conn.prepareStatement(
-                "UPDATE mecanicos SET nombre_mecanico = ?, especialidad = ?, experiencia = ?, tarifa_hora = ? WHERE id_mecanico = ?"
+                "UPDATE mecanicos SET nombre_mecanico = ?, especialidad = ?, experiencia = ?, tarifa = ? WHERE id_mecanico = ?"
             ).use { pstmt ->
                 pstmt.setString(1, mecanico.nombre)
                 pstmt.setString(2, mecanico.especialidad)
@@ -198,7 +176,6 @@ object MecanicosDAO {
         } while (idMecanico == null)
 
         conectarBD()?.use { conn ->
-            // 1. Comprobar que el mecánico existe
             conn.prepareStatement("SELECT nombre_mecanico FROM mecanicos WHERE id_mecanico = ?").use { stmt ->
                 stmt.setInt(1, idMecanico)
                 stmt.executeQuery().use { rs ->
@@ -210,7 +187,6 @@ object MecanicosDAO {
                 }
             }
 
-            // 2. Comprobar si tiene relaciones en 'reparar'
             val tieneRelaciones = conn.prepareStatement("SELECT 1 FROM reparar WHERE id_mecanico = ?").use { stmt ->
                 stmt.setInt(1, idMecanico)
                 stmt.executeQuery().use { it.next() }
@@ -220,7 +196,6 @@ object MecanicosDAO {
                 println("AVISO: Este mecánico tiene registros en la tabla 'reparar' que también se borrarán.")
             }
 
-            // 3. Confirmar y borrar
             println("¿Confirmas el borrado? (S/N):")
             if (readln().trim().uppercase() == "S") {
                 if (tieneRelaciones) {

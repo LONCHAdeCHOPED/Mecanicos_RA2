@@ -7,7 +7,7 @@ Entidades: Mecanicos, Reparaciones y Reparar
 
 object ProcedimientosDAO {
 
-    // 1. Llamada a la FUNCIÓN (CallableStatement con parámetro de salida registrado)
+    // Funcion calcular ingresos mecanico
     fun mostrarIngresosMecanico() {
         var idMecanico: Int?
         do {
@@ -22,12 +22,12 @@ object ProcedimientosDAO {
                 cstmt.execute()
 
                 val total = cstmt.getDouble(1)
-                println("El mecánico con ID $idMecanico ha generado un total de: ${total}€")
+                println("El mecánico con ID $idMecanico ha generado un total de: ${String.format("%.2f", total)}€")
             }
         } ?: println("No se pudo establecer la conexión.")
     }
 
-    // 2. Llamada al PROCEDIMIENTO DE CONSULTA (devuelve un ResultSet)
+    // Consulta reparaciones
     fun consultarReparacionesPorMecanico() {
         var idMecanico: Int?
         do {
@@ -48,7 +48,7 @@ object ProcedimientosDAO {
                                     "Avería: ${rs.getString("descripcion")} | " +
                                     "Estado: ${rs.getString("estado")} | " +
                                     "Horas: ${rs.getDouble("horas_trabajadas")}h | " +
-                                    "Importe: ${rs.getDouble("importe")}€"
+                                    "Importe: ${String.format("%.2f", rs.getDouble("importe"))}€"
                         )
                     }
                     if (!hayDatos) {
@@ -59,7 +59,7 @@ object ProcedimientosDAO {
         } ?: println("No se pudo establecer la conexión.")
     }
 
-    // 3. Llamada al PROCEDIMIENTO DE MODIFICACIÓN (actualiza la tabla reparaciones)
+    // Cambiar estado de una reparacion
     fun cambiarEstadoReparacion() {
         var idReparacion: Int?
         do {
