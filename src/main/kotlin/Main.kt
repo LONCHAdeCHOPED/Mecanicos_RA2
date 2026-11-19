@@ -28,7 +28,6 @@ fun main() {
     menuPrincipal()
 }
 
-
 fun menuPrincipal(){
     var numero : Int
 

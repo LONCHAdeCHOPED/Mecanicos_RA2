@@ -7,7 +7,6 @@ Entidades: Mecanicos, Reparaciones y Reparar
 
 object ProcedimientosDAO {
 
-    // Funcion calcular ingresos mecanico
     fun mostrarIngresosMecanico() {
         var idMecanico: Int?
         do {
@@ -27,7 +26,6 @@ object ProcedimientosDAO {
         } ?: println("No se pudo establecer la conexión.")
     }
 
-    // Consulta reparaciones
     fun consultarReparacionesPorMecanico() {
         var idMecanico: Int?
         do {
@@ -59,7 +57,6 @@ object ProcedimientosDAO {
         } ?: println("No se pudo establecer la conexión.")
     }
 
-    // Cambiar estado de una reparacion
     fun cambiarEstadoReparacion() {
         var idReparacion: Int?
         do {
@@ -67,7 +64,7 @@ object ProcedimientosDAO {
             idReparacion = readln().toIntOrNull()
         } while (idReparacion == null)
 
-        println("Introduce el nuevo estado (PENDIENTE / EN PROCESO / FINALIZADA):")
+        println("Introduce el nuevo estado (PENDIENTE | EN PROCESO | FINALIZADA):")
         val nuevoEstado = readln().trim().uppercase()
 
         conectarBD()?.use { conn ->

@@ -196,7 +196,7 @@ object MecanicosDAO {
                 println("AVISO: Este mecánico tiene registros en la tabla 'reparar' que también se borrarán.")
             }
 
-            println("¿Confirmas el borrado? (S/N):")
+            println("¿Seguro que quieres elimanarlo? (S/N):")
             if (readln().trim().uppercase() == "S") {
                 if (tieneRelaciones) {
                     conn.prepareStatement("DELETE FROM reparar WHERE id_mecanico = ?").use {

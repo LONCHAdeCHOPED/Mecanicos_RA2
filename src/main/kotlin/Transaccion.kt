@@ -8,9 +8,11 @@ Entidades: Mecanicos, Reparaciones y Reparar
 object Transaccion {
 
     fun asignarMecanicoAReparacion() {
+
         println("---------------------------------------")
         println("---ASIGNAR MECANICA A UNA REPARACION---")
         println("---------------------------------------")
+
         var idMecanico: Int?
         do {
             println("Introduce el ID del mecánico:")

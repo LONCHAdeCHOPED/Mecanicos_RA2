@@ -16,8 +16,6 @@ data class Reparacion(
 
 object ReparacionesDAO {
 
-    // Metodos de la tabla reparaciones (CRUD)
-
     fun listarReparaciones(): List<Reparacion> {
         val lista = mutableListOf<Reparacion>()
         conectarBD()?.use { conn ->
@@ -136,7 +134,7 @@ object ReparacionesDAO {
                             return
                         }
                         println("Reparación encontrada -> Matrícula: ${rs.getString("matricula")}")
-                        costeActual = rs.getDouble("coste_total")
+                        costeActual = Math.round(rs.getDouble("coste_total") * 100) / 100.0
                     }
                 }
         } ?: return
@@ -165,7 +163,6 @@ object ReparacionesDAO {
         } while (idReparacion == null)
 
         conectarBD()?.use { conn ->
-            // 1. Comprobar que la reparación existe
             conn.prepareStatement("SELECT matricula, descripcion FROM reparaciones WHERE id_reparacion = ?").use { stmt ->
                 stmt.setInt(1, idReparacion)
                 stmt.executeQuery().use { rs ->
@@ -176,8 +173,6 @@ object ReparacionesDAO {
                     println("Reparación encontrada: ${rs.getString("matricula")} - ${rs.getString("descripcion")}")
                 }
             }
-
-            // 2. Comprobar si tiene relaciones en 'reparar'
             val tieneRelaciones = conn.prepareStatement("SELECT 1 FROM reparar WHERE id_reparacion = ?").use { stmt ->
                 stmt.setInt(1, idReparacion)
                 stmt.executeQuery().use { it.next() }
@@ -187,8 +182,7 @@ object ReparacionesDAO {
                 println("AVISO: Esta reparación tiene registros en la tabla 'reparar' que también se borrarán.")
             }
 
-            // 3. Confirmar y borrar
-            println("¿Confirmas el borrado? (S/N):")
+            println("¿Seguro que quieres eliminarlo? (S/N):")
             if (readln().trim().uppercase() == "S") {
                 if (tieneRelaciones) {
                     conn.prepareStatement("DELETE FROM reparar WHERE id_reparacion = ?").use {
